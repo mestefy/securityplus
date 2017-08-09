@@ -1,0 +1,1 @@
+start windbg -y srv*D:\Work\symbols*https://msdl.microsoft.com/download/symbols;D:\Work\SecurityPlus\x64\Debug -srcpath D:\Work\SecurityPlus\SecurityPlus -k com:pipe,port=\\.\pipe\com_1,resets=0,reconnect 

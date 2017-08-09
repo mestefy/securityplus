@@ -1,0 +1,90 @@
+;
+; SecurityPlus.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=Sample ; TODO: edit Class
+ClassGuid={78A1C341-4539-11d3-B88D-00C04FAD5171} ; TODO: edit ClassGuid
+Provider=%ManufacturerName%
+CatalogFile=SecurityPlus.cat
+DriverVer= ; TODO: set DriverVer in stampinf property pages
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+; ================= Class section =====================
+
+[ClassInstall32]
+Addreg=SampleClassReg
+
+[SampleClassReg]
+HKR,,,0,%ClassName%
+HKR,,Icon,,-5
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+SecurityPlus.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%SecurityPlus.DeviceDesc%=SecurityPlus_Device, Root\SecurityPlus ; TODO: edit hw-id
+
+[SecurityPlus_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+SecurityPlus.sys
+
+;-------------- Service installation
+[SecurityPlus_Device.NT.Services]
+AddService = SecurityPlus,%SPSVCINST_ASSOCSERVICE%, SecurityPlus_Service_Inst
+
+; -------------- SecurityPlus driver install sections
+[SecurityPlus_Service_Inst]
+DisplayName    = %SecurityPlus.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\SecurityPlus.sys
+
+;
+;--- SecurityPlus_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+SecurityPlus_Device_CoInstaller_CopyFiles = 11
+
+[SecurityPlus_Device.NT.CoInstallers]
+AddReg=SecurityPlus_Device_CoInstaller_AddReg
+CopyFiles=SecurityPlus_Device_CoInstaller_CopyFiles
+
+[SecurityPlus_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[SecurityPlus_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[SourceDisksFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+[SecurityPlus_Device.NT.Wdf]
+KmdfService =  SecurityPlus, SecurityPlus_wdfsect
+[SecurityPlus_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Samples" ; TODO: edit ClassName
+DiskName = "SecurityPlus Installation Disk"
+SecurityPlus.DeviceDesc = "SecurityPlus Device"
+SecurityPlus.SVCDESC = "SecurityPlus Service"
